@@ -42,7 +42,7 @@ export default function Home() {
 
           {/* Photo Gallery Card */}
           <Link 
-            href="/photos"
+            href="/enhanced-gallery"
             className="homepage-card"
           >
             <div className="homepage-card-content">

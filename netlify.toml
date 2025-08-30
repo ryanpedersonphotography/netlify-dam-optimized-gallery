@@ -1,3 +1,22 @@
 [build]
-  publish = ".next"
   command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[dev]
+  command = "next dev"
+  port = 8888
+  targetPort = 3000
+
+# Optional headers (Images usually provide their own; safe to keep)
+[[headers]]
+  for = "/.netlify/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/api/asset-handler/serve"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

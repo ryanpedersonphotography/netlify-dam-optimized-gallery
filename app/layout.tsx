@@ -24,7 +24,7 @@ export default function RootLayout({
               <Link href="/events" className="nav-link">
                 Party Archive
               </Link>
-              <Link href="/photos" className="nav-link">
+              <Link href="/enhanced-gallery" className="nav-link">
                 Photo Gallery
               </Link>
             </nav>

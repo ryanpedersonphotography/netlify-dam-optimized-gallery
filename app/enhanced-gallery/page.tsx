@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { getClientOrigin } from '@/app/utils/getOrigin'
 import './PhotoGrid.css'
 
 interface Photo {
@@ -12,6 +13,8 @@ interface Photo {
   url: string
   thumbUrl: string
   mediumUrl: string
+  largeUrl: string
+  originalUrl: string
 }
 
 export default function EnhancedGallery() {
@@ -35,6 +38,9 @@ export default function EnhancedGallery() {
         console.log('Found assets:', data.assets.length)
         console.log('Sample asset:', data.assets[0])
         
+        // Get the origin for absolute URLs
+        const origin = getClientOrigin()
+        
         // Parse the keys to extract metadata
         const photoData = data.assets.map((asset: any) => {
           const key = asset.key
@@ -51,15 +57,25 @@ export default function EnhancedGallery() {
             }
           }
           
+          // Build absolute URL for the blob
+          const serve = `${origin}/api/asset-handler/serve?key=${encodeURIComponent(key)}`
+          
+          // Use Netlify Image CDN for optimization
+          const thumbUrl  = `/.netlify/images?url=${encodeURIComponent(serve)}&w=400&h=400&fit=cover&q=75&fm=webp`
+          const mediumUrl = `/.netlify/images?url=${encodeURIComponent(serve)}&w=1024&q=85&fm=webp`
+          const largeUrl  = `/.netlify/images?url=${encodeURIComponent(serve)}&w=2048&q=90&fm=webp`
+          
           return {
             key,
             filename: asset.filename || `${key}.jpg`,
             status,
             timestamp,
             date: parseTimestamp(timestamp),
-            url: `/api/asset-handler/serve?key=${encodeURIComponent(key)}&format=webp&quality=90`,
-            thumbUrl: `/api/asset-handler/serve?key=${encodeURIComponent(key)}&size=thumb&format=webp&quality=75`,
-            mediumUrl: `/api/asset-handler/serve?key=${encodeURIComponent(key)}&size=medium&format=webp&quality=85`
+            url: largeUrl, // For downloads
+            thumbUrl,
+            mediumUrl,
+            largeUrl,
+            originalUrl: serve // Fallback
           }
         })
         
@@ -266,7 +282,18 @@ export default function EnhancedGallery() {
             >
               ✕
             </button>
-            <img src={selectedPhoto.mediumUrl || selectedPhoto.url} alt={selectedPhoto.key} />
+            <img 
+              src={selectedPhoto.largeUrl || selectedPhoto.mediumUrl}
+              srcSet={`${selectedPhoto.mediumUrl} 1024w, ${selectedPhoto.largeUrl} 2048w`}
+              sizes="100vw"
+              alt={selectedPhoto.key}
+              style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
+              decoding="async"
+              fetchPriority="high"
+              onError={(e) => { 
+                (e.currentTarget as HTMLImageElement).src = selectedPhoto.originalUrl 
+              }}
+            />
             <div className="lightbox-info">
               <h3>{selectedPhoto.key}</h3>
               <p>Status: {selectedPhoto.status.toUpperCase()}</p>
@@ -306,6 +333,12 @@ function PhotoCard({ photo, onSelect, onDownload }: PhotoCardProps) {
   const imgRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
 
+  // Reset flags when photo changes
+  useEffect(() => {
+    setImageLoaded(false)
+    setImageError(false)
+  }, [photo.key])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -340,9 +373,21 @@ function PhotoCard({ photo, onSelect, onDownload }: PhotoCardProps) {
             src={photo.thumbUrl}
             alt={photo.key}
             loading="lazy"
+            decoding="async"
+            style={{
+              width: '100%',
+              height: 'auto',
+              aspectRatio: '1/1',
+              objectFit: 'cover',
+              opacity: imageLoaded ? 1 : 0,
+              transition: 'opacity 0.25s ease'
+            }}
             onLoad={() => setImageLoaded(true)}
-            onError={() => setImageError(true)}
-            style={{ opacity: imageLoaded ? 1 : 0 }}
+            onError={(e) => {
+              setImageError(true)
+              // Fallback to direct URL if CDN fails
+              ;(e.currentTarget as HTMLImageElement).src = photo.originalUrl
+            }}
           />
         )}
         <div className="photo-overlay">

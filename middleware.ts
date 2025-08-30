@@ -13,12 +13,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // exclude Next internals, static, Netlify Images, and the serve endpoint
+    '/((?!_next/|static/|\\.netlify/images|api/asset-handler/serve|favicon.ico|robots.txt|sitemap\\.xml).*)',
   ],
 }
