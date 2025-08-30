@@ -2,8 +2,6 @@
 import { getStore } from '@netlify/blobs'
 import { NextRequest, NextResponse } from 'next/server'
 
-const store = getStore('images')
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const key = searchParams.get('key')
@@ -18,6 +16,7 @@ export async function GET(request: NextRequest) {
     console.log(`🔍 Fetching blob: ${key} (size: ${size})`)
     
     // Get the blob from Netlify Blobs
+    const store = getStore('images')
     const blob = await store.get(key)
     
     if (!blob) {
