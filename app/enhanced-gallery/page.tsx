@@ -2,11 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
+import { getClientOrigin } from '@/app/utils/getOrigin'
 
 interface BlobImage {
   key: string
   url: string
   thumbUrl: string
+  mediumUrl?: string
+  largeUrl?: string
   index: number // Add explicit index
 }
 
@@ -41,13 +44,24 @@ export default function EnhancedGallery() {
 
       console.log(`📊 Fetched ${data.assets.length} assets`)
       
+      // Build proper CDN URLs with absolute paths
+      const isDev = process.env.NODE_ENV !== 'production'
+      const origin = getClientOrigin()
+      
       // Create unique image objects with explicit indexing
-      const imageUrls = data.assets.map((asset: any, index: number) => ({
-        key: asset.key,
-        url: `/api/asset-handler/serve?key=${encodeURIComponent(asset.key)}`,
-        thumbUrl: `/api/asset-handler/serve?key=${encodeURIComponent(asset.key)}&size=thumb`,
-        index // Explicit index for tracking
-      }))
+      const imageUrls = data.assets.map((asset: any, index: number) => {
+        const serve = `${origin}/api/asset-handler/serve?key=${encodeURIComponent(asset.key)}`
+        const serveForCdn = isDev ? `${serve}&cb=dev` : serve
+        
+        return {
+          key: asset.key,
+          url: serve,
+          thumbUrl: `/.netlify/images?url=${encodeURIComponent(serveForCdn)}&w=400&h=400&fit=cover&q=75&fm=webp${isDev ? '&v=dev' : ''}`,
+          mediumUrl: `/.netlify/images?url=${encodeURIComponent(serveForCdn)}&w=1024&q=85&fm=webp${isDev ? '&v=dev' : ''}`,
+          largeUrl: `/.netlify/images?url=${encodeURIComponent(serveForCdn)}&w=2048&q=90&fm=webp${isDev ? '&v=dev' : ''}`,
+          index // Explicit index for tracking
+        }
+      })
       
       // Remove duplicates based on key
       const uniqueImages = imageUrls.filter((img: BlobImage, idx: number, arr: BlobImage[]) => 
@@ -55,6 +69,16 @@ export default function EnhancedGallery() {
       )
       
       console.log(`🎯 Setting ${uniqueImages.length} unique images`)
+      
+      // Debug log for first item
+      if (typeof window !== 'undefined' && uniqueImages.length) {
+        console.log('[GALLERY] first item', {
+          key: uniqueImages[0].key,
+          thumbUrl: uniqueImages[0].thumbUrl,
+          largeUrl: uniqueImages[0].largeUrl,
+        })
+      }
+      
       setImages(uniqueImages)
       
     } catch (error) {
@@ -190,12 +214,19 @@ export default function EnhancedGallery() {
           
           <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
             <Image
-              src={selectedImage.url}
+              src={selectedImage.largeUrl || selectedImage.mediumUrl || selectedImage.url}
               alt={selectedImage.key}
               width={1200}
               height={800}
               className="max-w-full max-h-full object-contain"
               priority
+              onError={() => {
+                // Fallback to direct serve URL if CDN fails
+                if (selectedImage.largeUrl || selectedImage.mediumUrl) {
+                  const img = document.querySelector(`img[alt="${selectedImage.key}"]`) as HTMLImageElement
+                  if (img) img.src = selectedImage.url
+                }
+              }}
             />
             <div className="absolute bottom-4 left-4 right-4 text-white text-center">
               <p className="bg-black bg-opacity-50 rounded px-3 py-1">

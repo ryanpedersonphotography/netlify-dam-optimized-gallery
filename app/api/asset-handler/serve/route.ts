@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     console.log(`🔍 Fetching blob: ${key} (size: ${size})`)
     
     // Get the blob from Netlify Blobs
-    const store = getStore('images')
+    const store = getStore('property-assets')
     const blob = await store.get(key)
     
     if (!blob) {
@@ -67,14 +67,25 @@ export async function GET(request: NextRequest) {
     // Create response with proper headers
     // Convert Buffer to Uint8Array for NextResponse
     const uint8Array = new Uint8Array(buffer)
+    
+    const isDev = process.env.NODE_ENV !== 'production'
+    const headersOut: HeadersInit = {
+      'Content-Type': contentType,
+      'Content-Length': buffer.length.toString(),
+      ...(isDev
+        ? { 'Cache-Control': 'no-store' }
+        : {
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Netlify-CDN-Cache-Control': 'public, s-maxage=31536000, immutable',
+          }),
+      'Netlify-Cache-Tag': key,
+      'X-Content-Type-Options': 'nosniff',
+      'ETag': `"${key}"`,
+    }
+    
     const response = new NextResponse(uint8Array, {
       status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Length': buffer.length.toString(),
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        'ETag': `"${key}"`,
-      },
+      headers: headersOut,
     })
 
     return response
