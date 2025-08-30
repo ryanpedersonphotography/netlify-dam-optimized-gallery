@@ -25,27 +25,33 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Image not found' }, { status: 404 })
     }
 
-    console.log(`✅ Blob found: ${key}, type: ${blob.constructor.name}`)
+    console.log(`✅ Blob found: ${key}`)
 
     // Convert blob to buffer for processing
     let buffer: Buffer
     
-    // Type guard for different blob types
-    if (blob && typeof blob === 'object') {
-      if (blob.constructor.name === 'ArrayBuffer') {
-        buffer = Buffer.from(blob as ArrayBuffer)
-      } else if (blob.constructor.name === 'Uint8Array') {
-        buffer = Buffer.from(blob as Uint8Array)
-      } else if ('arrayBuffer' in blob) {
+    // Handle different blob types
+    try {
+      // Cast to any to handle various blob types
+      const blobData = blob as any
+      
+      if (blobData instanceof ArrayBuffer) {
+        buffer = Buffer.from(blobData)
+      } else if (blobData instanceof Uint8Array) {
+        buffer = Buffer.from(blobData)
+      } else if (blobData && typeof blobData.arrayBuffer === 'function') {
         // For ReadableStream or Blob types
-        const arrayBuffer = await (blob as any).arrayBuffer()
+        const arrayBuffer = await blobData.arrayBuffer()
         buffer = Buffer.from(arrayBuffer)
+      } else if (Buffer.isBuffer(blobData)) {
+        buffer = blobData
       } else {
-        // Fallback: try to convert directly
-        buffer = Buffer.from(blob as any)
+        // Last resort: try to convert directly
+        buffer = Buffer.from(blobData)
       }
-    } else {
-      throw new Error('Invalid blob type')
+    } catch (conversionError) {
+      console.error('Failed to convert blob to buffer:', conversionError)
+      throw new Error('Failed to process image data')
     }
 
     console.log(`📊 Buffer size: ${buffer.length} bytes`)
