@@ -29,14 +29,23 @@ export async function GET(request: NextRequest) {
 
     // Convert blob to buffer for processing
     let buffer: Buffer
-    if (blob instanceof ArrayBuffer) {
-      buffer = Buffer.from(blob)
-    } else if (blob instanceof Uint8Array) {
-      buffer = Buffer.from(blob)
+    
+    // Type guard for different blob types
+    if (blob && typeof blob === 'object') {
+      if (blob.constructor.name === 'ArrayBuffer') {
+        buffer = Buffer.from(blob as ArrayBuffer)
+      } else if (blob.constructor.name === 'Uint8Array') {
+        buffer = Buffer.from(blob as Uint8Array)
+      } else if ('arrayBuffer' in blob) {
+        // For ReadableStream or Blob types
+        const arrayBuffer = await (blob as any).arrayBuffer()
+        buffer = Buffer.from(arrayBuffer)
+      } else {
+        // Fallback: try to convert directly
+        buffer = Buffer.from(blob as any)
+      }
     } else {
-      // For ReadableStream or other types
-      const arrayBuffer = await blob.arrayBuffer()
-      buffer = Buffer.from(arrayBuffer)
+      throw new Error('Invalid blob type')
     }
 
     console.log(`📊 Buffer size: ${buffer.length} bytes`)
