@@ -1,0 +1,146 @@
+{
+  "properties": [
+    {
+      "id": "the-archive",
+      "name": "The Archive",
+      "address": "123 Main Street, Minneapolis, MN",
+      "coordinates": {
+        "lat": 44.9778,
+        "lng": -93.265
+      },
+      "assetTypes": [
+        "Parties",
+        "Room Layouts",
+        "Common Areas",
+        "Social"
+      ],
+      "events": {
+        "parties": [
+          {
+            "year": 2025,
+            "date": "2025-09-25",
+            "time": "5:30pm-9:00pm",
+            "attendees": null,
+            "description": "Food Truck Party - Coming Soon",
+            "upcoming": true,
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          },
+          {
+            "year": 2024,
+            "date": "2024-06-20",
+            "attendees": null,
+            "description": "Annual Summer Party",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          },
+          {
+            "year": 2023,
+            "date": "2023-05-05",
+            "attendees": null,
+            "description": "Solhem Annual Event - 1358 Photos (Placeholder Resolution)",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          },
+          {
+            "year": 2022,
+            "date": "2022-06-19",
+            "attendees": null,
+            "description": "Annual Summer Party",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          },
+          {
+            "year": 2021,
+            "date": "2021-06-20",
+            "attendees": null,
+            "description": "Annual Summer Party",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          },
+          {
+            "year": 2020,
+            "date": "2020-05-05",
+            "attendees": null,
+            "description": "Solhem Annual Event - 377 Photos",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "the-fred",
+      "name": "The Fred",
+      "address": "456 Oak Avenue, Minneapolis, MN",
+      "coordinates": {
+        "lat": 44.9633,
+        "lng": -93.2783
+      },
+      "assetTypes": [
+        "Parties",
+        "Room Layouts",
+        "Common Areas",
+        "Social"
+      ],
+      "events": {
+        "parties": [
+          {
+            "year": 2025,
+            "date": "2025-08-07",
+            "time": "5:30pm-9:00pm",
+            "attendees": null,
+            "description": "Food Truck Party",
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "lucille",
+      "name": "Lucille",
+      "address": "789 Elm Street, Minneapolis, MN",
+      "coordinates": {
+        "lat": 44.9705,
+        "lng": -93.289
+      },
+      "assetTypes": [
+        "Parties",
+        "Room Layouts",
+        "Common Areas",
+        "Social"
+      ],
+      "events": {
+        "parties": [
+          {
+            "year": 2025,
+            "date": "2025-09-18",
+            "time": "5:30pm-9:00pm",
+            "attendees": null,
+            "description": "Food Truck Party - Coming Soon",
+            "upcoming": true,
+            "assets": {
+              "top": [],
+              "all": []
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

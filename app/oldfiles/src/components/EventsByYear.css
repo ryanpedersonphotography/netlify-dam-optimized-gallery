@@ -1,0 +1,144 @@
+.events-by-year {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.year-selector {
+  margin-bottom: 2rem;
+}
+
+.year-selector h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.year-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.year-tab {
+  padding: 0.5rem 1.5rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -0.5rem;
+}
+
+.year-tab:hover {
+  color: #333;
+  background-color: #f5f5f5;
+}
+
+.year-tab.active {
+  color: #1976d2;
+  border-bottom-color: #1976d2;
+  background-color: #e3f2fd;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.event-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.event-image {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.event-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover .event-image img {
+  transform: scale(1.05);
+}
+
+.event-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  padding: 1.5rem 1rem 1rem;
+  color: white;
+}
+
+.photo-counts {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.top-count {
+  background: rgba(76, 175, 80, 0.9);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.all-count {
+  background: rgba(33, 150, 243, 0.9);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.event-info {
+  padding: 1.5rem;
+}
+
+.event-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.event-date {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.event-description {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+.no-events {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #999;
+  font-size: 1.2rem;
+}

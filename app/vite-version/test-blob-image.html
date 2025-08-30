@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netlify Blob Test - 2025FRED Image</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+        .info {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #444;
+        }
+        .info h2 {
+            color: #00ff88;
+            margin-top: 0;
+        }
+        .info p {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+            color: #ccc;
+        }
+        .info strong {
+            color: #fff;
+        }
+        .image-container {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.loading {
+            background: #444;
+            color: #ffaa00;
+        }
+        .status.success {
+            background: #003322;
+            color: #00ff88;
+        }
+        .status.error {
+            background: #440000;
+            color: #ff4444;
+        }
+        .url-display {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 Netlify Blob Image Test</h1>
+        
+        <div class="info">
+            <h2>📊 Test Details</h2>
+            <p><strong>File Name:</strong> 2025FRED_20250807180510_UNPICKED.jpg</p>
+            <p><strong>Original Size:</strong> ~4 MB</p>
+            <p><strong>Blob Key:</strong> 2025FRED_20250807180510_UNPICKED</p>
+            <p><strong>Storage:</strong> Netlify Blobs (property-assets store) - Local Dev</p>
+        </div>
+
+        <div class="status loading" id="status">
+            Loading image from Netlify Blobs...
+        </div>
+
+        <div class="info" id="debugInfo" style="display: none;">
+            <h2>🔍 Debug Information</h2>
+            <div id="debugContent">
+                <p><strong>Loading...</strong></p>
+            </div>
+        </div>
+
+        <div class="info" id="networkInfo" style="display: none;">
+            <h2>🌐 Network Response</h2>
+            <div id="networkContent">
+                <p><strong>Fetching headers...</strong></p>
+            </div>
+        </div>
+
+        <div class="image-container">
+            <h2>📸 Uploaded Image</h2>
+            <img id="testImage" 
+                 src="http://localhost:8888/api/asset-handler/serve?key=2025FRED_20250807180510_UNPICKED"
+                 alt="Test image from Netlify Blobs"
+                 onload="imageLoaded()"
+                 onerror="imageError()">
+            <div class="url-display">
+                <strong>URL:</strong> http://localhost:8888/api/asset-handler/serve?key=2025FRED_20250807180510_UNPICKED
+            </div>
+        </div>
+
+        <div class="info">
+            <h2>📝 Console Log</h2>
+            <div id="consoleLog" style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
+                <div style="color: #888;">Starting debug session...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addLog(message, type = 'info') {
+            const consoleLog = document.getElementById('consoleLog');
+            const time = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : type === 'success' ? '#00ff88' : '#aaa';
+            consoleLog.innerHTML += `<div style="color: ${color};">[${time}] ${message}</div>`;
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
+
+        function imageLoaded() {
+            const status = document.getElementById('status');
+            const img = document.getElementById('testImage');
+            status.className = 'status success';
+            status.innerHTML = `✅ Image loaded successfully! (${img.naturalWidth} x ${img.naturalHeight} pixels)`;
+            
+            // Show debug info
+            document.getElementById('debugInfo').style.display = 'block';
+            const debugContent = document.getElementById('debugContent');
+            debugContent.innerHTML = `
+                <p><strong>Image Dimensions:</strong> ${img.naturalWidth} x ${img.naturalHeight} pixels</p>
+                <p><strong>Display Size:</strong> ${img.width} x ${img.height} pixels</p>
+                <p><strong>Complete:</strong> ${img.complete}</p>
+                <p><strong>Decode Ready:</strong> ${img.decode ? 'Yes' : 'No'}</p>
+                <p><strong>Current Src:</strong> <span style="word-break: break-all; font-size: 11px;">${img.src}</span></p>
+                <p><strong>Load Time:</strong> ${performance.now().toFixed(2)}ms</p>
+            `;
+            
+            addLog(`Image loaded: ${img.naturalWidth}x${img.naturalHeight}`, 'success');
+        }
+
+        function imageError() {
+            const status = document.getElementById('status');
+            status.className = 'status error';
+            status.innerHTML = '❌ Failed to load image from Netlify Blobs';
+            
+            addLog('Image failed to load', 'error');
+        }
+
+        // Fetch headers and debug info
+        async function fetchDebugInfo() {
+            const url = 'http://localhost:8888/api/asset-handler/serve?key=2025FRED_20250807180510_UNPICKED';
+            
+            addLog('Starting fetch for debug info...');
+            
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                
+                document.getElementById('networkInfo').style.display = 'block';
+                const networkContent = document.getElementById('networkContent');
+                
+                let headersHTML = `<p><strong>Status:</strong> ${response.status} ${response.statusText}</p>`;
+                headersHTML += `<p><strong>Response Headers:</strong></p>`;
+                headersHTML += '<div style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 11px;">';
+                
+                for (const [key, value] of response.headers.entries()) {
+                    headersHTML += `<div><span style="color: #00ff88;">${key}:</span> ${value}</div>`;
+                }
+                headersHTML += '</div>';
+                
+                networkContent.innerHTML = headersHTML;
+                
+                addLog(`Network response: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+                
+                // Try to fetch actual content info
+                const fullResponse = await fetch(url);
+                const blob = await fullResponse.blob();
+                
+                networkContent.innerHTML += `
+                    <p style="margin-top: 10px;"><strong>Content Info:</strong></p>
+                    <p>• Blob Size: ${(blob.size / 1024 / 1024).toFixed(2)} MB</p>
+                    <p>• Blob Type: ${blob.type || 'unknown'}</p>
+                `;
+                
+                addLog(`Fetched blob: ${(blob.size / 1024 / 1024).toFixed(2)}MB, type: ${blob.type}`);
+                
+            } catch (error) {
+                addLog(`Fetch error: ${error.message}`, 'error');
+                document.getElementById('networkContent').innerHTML = `
+                    <p style="color: #ff4444;">Error fetching network info: ${error.message}</p>
+                `;
+            }
+        }
+
+        // Add timestamp to prevent caching
+        document.getElementById('testImage').src += '&t=' + Date.now();
+        
+        addLog('Page loaded, initiating image load...');
+        addLog(`Image URL: ${document.getElementById('testImage').src.split('&t=')[0]}`);
+        
+        // Start debug fetch
+        fetchDebugInfo();
+
+        // Monitor image loading
+        const img = document.getElementById('testImage');
+        img.addEventListener('loadstart', () => addLog('Image load started'));
+        img.addEventListener('progress', () => addLog('Image loading progress'));
+        img.addEventListener('loadend', () => addLog('Image load ended'));
+    </script>
+</body>
+</html>
