@@ -19,12 +19,14 @@ export async function GET(request: NextRequest) {
     }
 
     const store = getStore('property-assets')
-    const { data, metadata } = await store.getWithMetadata(key, { type: 'stream' })
-    if (!data) {
+    const result = await store.getWithMetadata(key, { type: 'stream' })
+    if (!result || !result.data) {
       return new Response(JSON.stringify({ error: 'Asset not found' }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
       })
     }
+    
+    const { data, metadata } = result
 
     const contentType = (metadata as any)?.contentType || 'application/octet-stream'
 
