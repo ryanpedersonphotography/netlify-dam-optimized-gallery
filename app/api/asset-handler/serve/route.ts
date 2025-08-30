@@ -66,7 +66,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Create response with proper headers
-    const response = new NextResponse(buffer, {
+    // Convert Buffer to Uint8Array for NextResponse
+    const uint8Array = new Uint8Array(buffer)
+    const response = new NextResponse(uint8Array, {
       status: 200,
       headers: {
         'Content-Type': contentType,
