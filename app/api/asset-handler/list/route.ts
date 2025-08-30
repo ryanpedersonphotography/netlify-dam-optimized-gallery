@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 200) // Max 200 per request
     
-    const assetStore = getStore('property-assets')
+    const assetStore = getStore('images')
     
     // List all blobs with prefix (simple approach that works)
     const { blobs } = await assetStore.list({ prefix })
