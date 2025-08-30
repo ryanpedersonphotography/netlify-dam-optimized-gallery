@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     console.log(`🔍 Fetching blob: ${key} (size: ${size})`)
     
     // Get the blob from Netlify Blobs
-    const store = getStore('property-assets')
+    const store = getStore('images')
     const blob = await store.get(key)
     
     if (!blob) {
